@@ -3,38 +3,103 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Templates</title>
+  <title>Templates Gallery</title>
   <style>
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      -webkit-tap-highlight-color: transparent;
     }
     body {
-      background: #f8fafc;
-      padding: 12px;
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 14px 10px;
     }
+
+    /* Search & Filter Header */
+    .filter-section {
+      max-width: 1200px;
+      margin: 0 auto 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid #334155;
+      background: #1e293b;
+      color: #fff;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    .search-input:focus {
+      border-color: #38bdf8;
+    }
+
+    /* Category Filter Tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+    .tabs::-webkit-scrollbar {
+      display: none;
+    }
+    .tab-btn {
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: #1e293b;
+      color: #94a3b8;
+      border: 1px solid #334155;
+      font-size: 0.82rem;
+      font-weight: 500;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+    .tab-btn.active {
+      background: #38bdf8;
+      color: #0f172a;
+      border-color: #38bdf8;
+      font-weight: 700;
+    }
+
+    /* Grid */
     .grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 12px;
-      max-width: 1100px;
+      max-width: 1200px;
       margin: 0 auto;
     }
+    @media (min-width: 768px) {
+      .grid { grid-template-columns: repeat(4, 1fr); }
+    }
+
     .card {
-      background: #ffffff;
+      background: #1e293b;
       border-radius: 10px;
       overflow: hidden;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      border: 1px solid #334155;
       display: flex;
       flex-direction: column;
+      cursor: pointer;
     }
+    .card:active {
+      transform: scale(0.98);
+    }
+
     .media-box {
       width: 100%;
       aspect-ratio: 9 / 16;
-      background: #000000;
-      overflow: hidden;
+      background: #020617;
+      position: relative;
     }
     .media-box img,
     .media-box video {
@@ -42,101 +107,307 @@
       height: 100%;
       object-fit: cover;
       display: block;
+      pointer-events: none;
     }
+    .play-badge {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(0, 0, 0, 0.75);
+      color: #fff;
+      font-size: 0.65rem;
+      padding: 3px 6px;
+      border-radius: 4px;
+    }
+
     .card-title {
       padding: 8px;
-      font-size: 0.75rem;
-      color: #334155;
-      font-weight: 600;
+      font-size: 0.76rem;
+      color: #e2e8f0;
       line-height: 1.3;
+      font-weight: 500;
+    }
+
+    /* Modal / Lightbox */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.96);
+      z-index: 999999;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+    .modal.active { display: flex; }
+    .modal-content {
+      max-width: 90vw;
+      max-height: 76vh;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .modal-content video, .modal-content img {
+      width: 100%;
+      max-height: 76vh;
+      object-fit: contain;
+    }
+    .modal-title {
+      margin-top: 14px;
+      font-size: 0.9rem;
+      color: #f8fafc;
+      text-align: center;
+    }
+    .close-btn {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border: none;
+      font-size: 1.8rem;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <main class="grid" id="templateGrid"></main>
+  <div class="filter-section">
+    <input type="text" id="searchInput" class="search-input" placeholder="Search templates (e.g. Wedding, Marathi, Poster)..." />
+    <div class="tabs">
+      <button class="tab-btn active" data-category="all">All</button>
+      <button class="tab-btn" data-category="wedding">Wedding & Engagement</button>
+      <button class="tab-btn" data-category="birthday">Birthday</button>
+      <button class="tab-btn" data-category="festival">Festival & Pooja</button>
+      <button class="tab-btn" data-category="business">Business & Posters</button>
+    </div>
+  </div>
+
+  <main class="grid" id="grid"></main>
+
+  <!-- Fullscreen Modal -->
+  <div class="modal" id="modalView">
+    <button class="close-btn" id="closeModal">&times;</button>
+    <div class="modal-content" id="modalMedia"></div>
+    <div class="modal-title" id="modalTitle"></div>
+  </div>
 
   <script>
     const templates = [
       {
         title: "Engagement Invitation Video with Kedarnath Theme",
+        category: "wedding",
         src: "https://media.craftyartapp.com/uploadedFiles/v/e441d978117f912ad34a07db889efc07996a37191787810577.mp4",
         isVideo: true
       },
       {
         title: "Wedding Save The Date Video with Royal Palace Theme",
+        category: "wedding",
         src: "https://media.craftyartapp.com/uploadedFiles/v/c8b0a95a602c4eac078812876cb65e6a2ea5da741783332173.mp4",
         isVideo: true
       },
       {
         title: "Wedding Invitation Video with Traditional Indian Theme",
+        category: "wedding",
         src: "https://media.craftyartapp.com/uploadedFiles/v/d1f20da8510e234b1a61b83434125e9483a53a101782208273.mp4",
         isVideo: true
       },
       {
         title: "3d Indian Wedding Invitation Video with Royal Rajput Theme",
+        category: "wedding",
         src: "https://media.craftyartapp.com/uploadedFiles/v/7ca50e04afabc51770bf7091dbb1d985a99b7ab31780461685.mp4",
         isVideo: true
       },
       {
         title: "Beautiful Wedding Invitation Video with Caricature Theme",
+        category: "wedding",
         src: "https://media.craftyartapp.com/uploadedFiles/v/8d60292a1be30514ac7b867f3afe4b3b04fd60db1779538473.mp4",
         isVideo: true
       },
       {
         title: "3D Wedding Invitation Video Udaipur Palace Theme Invite",
+        category: "wedding",
         src: "https://media.craftyartapp.com/uploadedFiles/v/707af7668162066a9880b3aef75f1ee1635723ed1776771535.mp4",
         isVideo: true
       },
       {
         title: "Marathi Wedding Invitation Video Shubh Vivah Invite",
+        category: "wedding",
         src: "https://media.craftyartapp.com/uploadedFiles/v/025bbd83f353d849fbf73b534823d3d178667dc41775737040.mp4",
         isVideo: true
       },
       {
         title: "1st Birthday Invitation Video with Balloon Theme",
+        category: "birthday",
         src: "https://media.craftyartapp.com/uploadedFiles/v/4d49350dd5f156986c8f7a43da4402c19b60a6231784194839.mp4",
         isVideo: true
       },
       {
         title: "Ganpati Invitation Card in Marathi Template Design",
+        category: "festival",
         src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/1e1361f2d79f35eeff74d4fb993af82d141743731754914803.jpg",
         isVideo: false
       },
       {
         title: "Girl Cinderella Birthday Invitation Template",
+        category: "birthday",
         src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/bc936b96c47cb0fa39ab9b7f63876b2a67f2f57e1734001731.jpg",
         isVideo: false
       },
       {
         title: "Best Summer Camp Poster For Kids",
+        category: "business",
         src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/2f02c460ab5643672f144f8167dc4c3b7e2748c01744031128.png",
         isVideo: false
       },
       {
         title: "Corporate Resignation Letter Template",
+        category: "business",
         src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/f7e9443e5c46a3654c0d61b1e11e2cab332a630c1724991609.jpg",
+        isVideo: false
+      },
+      {
+        title: "Download Brunch Menu Template",
+        category: "business",
+        src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/d8e12b7a9504c568ef7e0cb60e352ef21718018270.jpg",
+        isVideo: false
+      },
+      {
+        title: "Restaurant Menu Poster",
+        category: "business",
+        src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/e892c90c60f224b78971f11a437f82721718018271.jpg",
+        isVideo: false
+      },
+      {
+        title: "Creative Fast Food Restaurant Menu Template",
+        category: "business",
+        src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/2c9c7f2ba4bc40cb8f34177d549e31d41718018273.jpg",
+        isVideo: false
+      },
+      {
+        title: "New Resignation Letter Template",
+        category: "business",
+        src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/6e6ad9d2f6004944a69cf4ad2fa24b5a1718018275.jpg",
+        isVideo: false
+      },
+      {
+        title: "Trending Corporate Resignation Letter Template",
+        category: "business",
+        src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/9c9228d7b3ea4101a09d3b4e7a82c4411718018276.jpg",
+        isVideo: false
+      },
+      {
+        title: "Simple New Letterhead Template",
+        category: "business",
+        src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/7e8a9c2b4e5f4d11b89a6c7e3f2b1a091718018277.jpg",
+        isVideo: false
+      },
+      {
+        title: "Dahi Handi Letterhead Design for Krishna Janmashtami",
+        category: "festival",
+        src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/5b6a7c8d9e0f1a2b3c4d5e6f7a8b9c0d1718018278.jpg",
+        isVideo: false
+      },
+      {
+        title: "Janmashtami Festival Letterhead Design for Dahi Handi",
+        category: "festival",
+        src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d1718018279.jpg",
+        isVideo: false
+      },
+      {
+        title: "Ganesh Chaturthi Invitation Card with Lake and Trees",
+        category: "festival",
+        src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d1718018280.jpg",
+        isVideo: false
+      },
+      {
+        title: "Ganesh Invite Card in Nature Theme",
+        category: "festival",
+        src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d1718018281.jpg",
         isVideo: false
       }
     ];
 
-    const container = document.getElementById("templateGrid");
+    const grid = document.getElementById("grid");
+    const searchInput = document.getElementById("searchInput");
+    const tabBtns = document.querySelectorAll(".tab-btn");
+    const modal = document.getElementById("modalView");
+    const modalMedia = document.getElementById("modalMedia");
+    const modalTitle = document.getElementById("modalTitle");
+    const closeModal = document.getElementById("closeModal");
 
-    templates.forEach(t => {
-      const card = document.createElement("div");
-      card.className = "card";
+    let currentCategory = "all";
+    let currentSearch = "";
 
-      const media = t.isVideo
-        ? `<video src="${t.src}" loop muted playsinline autoplay></video>`
-        : `<img src="${t.src}" alt="${t.title}" loading="lazy" />`;
+    function renderCards() {
+      grid.innerHTML = "";
+      const filtered = templates.filter(t => {
+        const matchesCategory = currentCategory === "all" || t.category === currentCategory;
+        const matchesSearch = t.title.toLowerCase().includes(currentSearch);
+        return matchesCategory && matchesSearch;
+      });
 
-      card.innerHTML = `
-        <div class="media-box">${media}</div>
-        <div class="card-title">${t.title}</div>
-      `;
-      container.appendChild(card);
+      filtered.forEach(t => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        const media = t.isVideo
+          ? `<video src="${t.src}" loop muted playsinline autoplay></video>`
+          : `<img src="${t.src}" alt="${t.title}" loading="lazy" />`;
+
+        card.innerHTML = `
+          <div class="media-box">
+            ${media}
+            <span class="play-badge">${t.isVideo ? '▶ Play' : '🔍 View'}</span>
+          </div>
+          <div class="card-title">${t.title}</div>
+        `;
+
+        card.addEventListener("click", () => {
+          modalMedia.innerHTML = t.isVideo
+            ? `<video src="${t.src}" controls autoplay playsinline></video>`
+            : `<img src="${t.src}" alt="${t.title}">`;
+          modalTitle.textContent = t.title;
+          modal.classList.add("active");
+        });
+
+        grid.appendChild(card);
+      });
+    }
+
+    // Tab Filter Logic
+    tabBtns.forEach(btn => {
+      btn.addEventListener("click", () => {
+        tabBtns.forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentCategory = btn.dataset.category;
+        renderCards();
+      });
     });
-  </script>
 
+    // Search Filter Logic
+    searchInput.addEventListener("input", (e) => {
+      currentSearch = e.target.value.toLowerCase();
+      renderCards();
+    });
+
+    // Modal Close
+    function hideModal() {
+      modal.classList.remove("active");
+      modalMedia.innerHTML = "";
+    }
+    closeModal.addEventListener("click", hideModal);
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) hideModal();
+    });
+
+    renderCards();
+  </script>
 </body>
 </html>
