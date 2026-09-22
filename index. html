@@ -3,43 +3,140 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Templates Gallery</title>
+  <title>Templates</title>
   <style>
     * {
+      box-sizing: border-box;
       margin: 0;
       padding: 0;
-      box-sizing: border-box;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     }
-    html, body {
-      width: 100%;
-      height: 100%;
-      overflow-x: hidden;
+    body {
       background: #f8fafc;
+      padding: 12px;
     }
-    /* Frame that loads the site */
-    .frame-wrapper {
-      width: 100%;
-      height: 100vh;
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .card {
+      background: #ffffff;
+      border-radius: 10px;
       overflow: hidden;
-      position: relative;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+      display: flex;
+      flex-direction: column;
     }
-    iframe {
+    .media-box {
+      width: 100%;
+      aspect-ratio: 9 / 16;
+      background: #000000;
+      overflow: hidden;
+    }
+    .media-box img,
+    .media-box video {
       width: 100%;
       height: 100%;
-      border: none;
+      object-fit: cover;
       display: block;
+    }
+    .card-title {
+      padding: 8px;
+      font-size: 0.75rem;
+      color: #334155;
+      font-weight: 600;
+      line-height: 1.3;
     }
   </style>
 </head>
 <body>
 
-  <div class="frame-wrapper">
-    <iframe 
-      src="https://siddhidigitalinvite.in/" 
-      title="Template Gallery" 
-      loading="lazy">
-    </iframe>
-  </div>
+  <main class="grid" id="templateGrid"></main>
+
+  <script>
+    const templates = [
+      {
+        title: "Engagement Invitation Video with Kedarnath Theme",
+        src: "https://media.craftyartapp.com/uploadedFiles/v/e441d978117f912ad34a07db889efc07996a37191787810577.mp4",
+        isVideo: true
+      },
+      {
+        title: "Wedding Save The Date Video with Royal Palace Theme",
+        src: "https://media.craftyartapp.com/uploadedFiles/v/c8b0a95a602c4eac078812876cb65e6a2ea5da741783332173.mp4",
+        isVideo: true
+      },
+      {
+        title: "Wedding Invitation Video with Traditional Indian Theme",
+        src: "https://media.craftyartapp.com/uploadedFiles/v/d1f20da8510e234b1a61b83434125e9483a53a101782208273.mp4",
+        isVideo: true
+      },
+      {
+        title: "3d Indian Wedding Invitation Video with Royal Rajput Theme",
+        src: "https://media.craftyartapp.com/uploadedFiles/v/7ca50e04afabc51770bf7091dbb1d985a99b7ab31780461685.mp4",
+        isVideo: true
+      },
+      {
+        title: "Beautiful Wedding Invitation Video with Caricature Theme",
+        src: "https://media.craftyartapp.com/uploadedFiles/v/8d60292a1be30514ac7b867f3afe4b3b04fd60db1779538473.mp4",
+        isVideo: true
+      },
+      {
+        title: "3D Wedding Invitation Video Udaipur Palace Theme Invite",
+        src: "https://media.craftyartapp.com/uploadedFiles/v/707af7668162066a9880b3aef75f1ee1635723ed1776771535.mp4",
+        isVideo: true
+      },
+      {
+        title: "Marathi Wedding Invitation Video Shubh Vivah Invite",
+        src: "https://media.craftyartapp.com/uploadedFiles/v/025bbd83f353d849fbf73b534823d3d178667dc41775737040.mp4",
+        isVideo: true
+      },
+      {
+        title: "1st Birthday Invitation Video with Balloon Theme",
+        src: "https://media.craftyartapp.com/uploadedFiles/v/4d49350dd5f156986c8f7a43da4402c19b60a6231784194839.mp4",
+        isVideo: true
+      },
+      {
+        title: "Ganpati Invitation Card in Marathi Template Design",
+        src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/1e1361f2d79f35eeff74d4fb993af82d141743731754914803.jpg",
+        isVideo: false
+      },
+      {
+        title: "Girl Cinderella Birthday Invitation Template",
+        src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/bc936b96c47cb0fa39ab9b7f63876b2a67f2f57e1734001731.jpg",
+        isVideo: false
+      },
+      {
+        title: "Best Summer Camp Poster For Kids",
+        src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/2f02c460ab5643672f144f8167dc4c3b7e2748c01744031128.png",
+        isVideo: false
+      },
+      {
+        title: "Corporate Resignation Letter Template",
+        src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/f7e9443e5c46a3654c0d61b1e11e2cab332a630c1724991609.jpg",
+        isVideo: false
+      }
+    ];
+
+    const container = document.getElementById("templateGrid");
+
+    templates.forEach(t => {
+      const card = document.createElement("div");
+      card.className = "card";
+
+      const media = t.isVideo
+        ? `<video src="${t.src}" loop muted playsinline autoplay></video>`
+        : `<img src="${t.src}" alt="${t.title}" loading="lazy" />`;
+
+      card.innerHTML = `
+        <div class="media-box">${media}</div>
+        <div class="card-title">${t.title}</div>
+      `;
+      container.appendChild(card);
+    });
+  </script>
 
 </body>
 </html>
