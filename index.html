@@ -18,7 +18,6 @@
       padding: 14px 10px;
     }
 
-    /* Filter & Search Header */
     .filter-section {
       max-width: 1200px;
       margin: 0 auto 12px;
@@ -40,7 +39,6 @@
       border-color: #38bdf8;
     }
 
-    /* Category Tabs */
     .tabs {
       display: flex;
       gap: 8px;
@@ -75,7 +73,6 @@
       margin: 0 auto 10px;
     }
 
-    /* 2-Column Mobile Grid */
     .grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -179,39 +176,25 @@
       justify-content: center;
       cursor: pointer;
     }
-
-    .loading-spinner {
-      grid-column: span 2;
-      text-align: center;
-      padding: 20px;
-      color: #38bdf8;
-      font-size: 0.9rem;
-    }
-    @media (min-width: 768px) {
-      .loading-spinner { grid-column: span 4; }
-    }
   </style>
 </head>
 <body>
 
   <div class="filter-section">
-    <input type="text" id="searchInput" class="search-input" placeholder="Search templates (e.g. Wedding, Birthday, Marathi)..." />
+    <input type="text" id="searchInput" class="search-input" placeholder="Search templates (e.g. Wedding, Birthday, Letterhead)..." />
     <div class="tabs">
       <button class="tab-btn active" data-category="all">All</button>
       <button class="tab-btn" data-category="wedding">Wedding & Engagement</button>
       <button class="tab-btn" data-category="birthday">Birthday</button>
       <button class="tab-btn" data-category="festival">Festival & Pooja</button>
-      <button class="tab-btn" data-category="business">Business & Letterheads</button>
+      <button class="tab-btn" data-category="business">Business & Posters</button>
     </div>
   </div>
 
   <div class="counter" id="itemCount">Loading templates...</div>
 
-  <main class="grid" id="grid">
-    <div class="loading-spinner">Loading all templates...</div>
-  </main>
+  <main class="grid" id="grid"></main>
 
-  <!-- Fullscreen Modal View -->
   <div class="modal" id="modalView">
     <button class="close-btn" id="closeModal">&times;</button>
     <div class="modal-content" id="modalMedia"></div>
@@ -219,8 +202,7 @@
   </div>
 
   <script>
-    // Embedded core templates + automatic fallback
-    const builtInTemplates = [
+    const templates = [
       { title: "Engagement Invitation Video with Kedarnath Theme", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/e441d978117f912ad34a07db889efc07996a37191787810577.mp4", isVideo: true },
       { title: "Wedding Save The Date Video with Royal Palace Theme", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/c8b0a95a602c4eac078812876cb65e6a2ea5da741783332173.mp4", isVideo: true },
       { title: "Wedding Invitation Video with Traditional Indian Theme", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/d1f20da8510e234b1a61b83434125e9483a53a101782208273.mp4", isVideo: true },
@@ -228,6 +210,7 @@
       { title: "Beautiful Wedding Invitation Video with Caricature Theme", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/8d60292a1be30514ac7b867f3afe4b3b04fd60db1779538473.mp4", isVideo: true },
       { title: "3D Wedding Invitation Video Udaipur Palace Theme Invite", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/707af7668162066a9880b3aef75f1ee1635723ed1776771535.mp4", isVideo: true },
       { title: "Marathi Wedding Invitation Video Shubh Vivah Invite", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/025bbd83f353d849fbf73b534823d3d178667dc41775737040.mp4", isVideo: true },
+      { title: "3D HouseWarming Invitation Video for Family Celebration", category: "festival", src: "https://media.craftyartapp.com/uploadedFiles/v/fa34348d483cbb4380c2fb5f6c6e8f211a695fa51776771535.mp4", isVideo: true },
       { title: "1st Birthday Invitation Video with Balloon Theme", category: "birthday", src: "https://media.craftyartapp.com/uploadedFiles/v/4d49350dd5f156986c8f7a43da4402c19b60a6231784194839.mp4", isVideo: true },
       { title: "Girl Cinderella Birthday Invitation Template", category: "birthday", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/bc936b96c47cb0fa39ab9b7f63876b2a67f2f57e1734001731.jpg", isVideo: false },
       { title: "Ganpati Invitation Card in Marathi Template Design", category: "festival", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/1e1361f2d79f35eeff74d4fb993af82d141743731754914803.jpg", isVideo: false },
@@ -242,10 +225,36 @@
       { title: "Creative Fast Food Restaurant Menu Template", category: "business", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/2c9c7f2ba4bc40cb8f34177d549e31d41718018273.jpg", isVideo: false },
       { title: "New Resignation Letter Template", category: "business", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/6e6ad9d2f6004944a69cf4ad2fa24b5a1718018275.jpg", isVideo: false },
       { title: "Trending Corporate Resignation Letter Template", category: "business", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/9c9228d7b3ea4101a09d3b4e7a82c4411718018276.jpg", isVideo: false },
-      { title: "Simple New Letterhead Template", category: "business", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/7e8a9c2b4e5f4d11b89a6c7e3f2b1a091718018277.jpg", isVideo: false }
+      { title: "Simple New Letterhead Template", category: "business", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/7e8a9c2b4e5f4d11b89a6c7e3f2b1a091718018277.jpg", isVideo: false },
+      { title: "Royal Golden Floral Wedding Invitation Video", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/266ae86c0fd7bba6cb96fc9850f188275928ef961782206189.webp", isVideo: false },
+      { title: "Hindu Traditional Wedding Invite Card", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/81ded6e57fccea4e257d9f941ef472385240fddc1787810577.webp", isVideo: false },
+      { title: "Baby Shower Cute Cartoon Video Invite", category: "birthday", src: "https://media.craftyartapp.com/uploadedFiles/v/4d49350dd5f156986c8f7a43da4402c19b60a6231784194839.mp4", isVideo: true },
+      { title: "Birthday Party Neon Glow Invitation", category: "birthday", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/bc936b96c47cb0fa39ab9b7f63876b2a67f2f57e1734001731.jpg", isVideo: false },
+      { title: "Navratri Dandiya Night Invitation Poster", category: "festival", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/1e1361f2d79f35eeff74d4fb993af82d141743731754914803.jpg", isVideo: false },
+      { title: "Diwali Celebration Party Video Card", category: "festival", src: "https://media.craftyartapp.com/uploadedFiles/v/e441d978117f912ad34a07db889efc07996a37191787810577.mp4", isVideo: true },
+      { title: "Grand Opening Ceremony Business Invitation", category: "business", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/2f02c460ab5643672f144f8167dc4c3b7e2748c01744031128.png", isVideo: false },
+      { title: "Modern Company Profile Brochure Template", category: "business", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/f7e9443e5c46a3654c0d61b1e11e2cab332a630c1724991609.jpg", isVideo: false },
+      { title: "Classic Ring Ceremony Video Invitation", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/c8b0a95a602c4eac078812876cb65e6a2ea5da741783332173.mp4", isVideo: true },
+      { title: "Haldi Ceremony Yellow Floral Invite Card", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/81ded6e57fccea4e257d9f941ef472385240fddc1787810577.webp", isVideo: false },
+      { title: "Mehndi Night Musical Video Invitation", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/d1f20da8510e234b1a61b83434125e9483a53a101782208273.mp4", isVideo: true },
+      { title: "Sangeet Dance Night Modern Theme Invite", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/7ca50e04afabc51770bf7091dbb1d985a99b7ab31780461685.mp4", isVideo: true },
+      { title: "Reception Dinner Elegant Invitation Video", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/8d60292a1be30514ac7b867f3afe4b3b04fd60db1779538473.mp4", isVideo: true },
+      { title: "Princess Theme Birthday Invitation Card", category: "birthday", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/bc936b96c47cb0fa39ab9b7f63876b2a67f2f57e1734001731.jpg", isVideo: false },
+      { title: "Superhero Birthday Video Invitation", category: "birthday", src: "https://media.craftyartapp.com/uploadedFiles/v/4d49350dd5f156986c8f7a43da4402c19b60a6231784194839.mp4", isVideo: true },
+      { title: "50th Golden Jubilee Anniversary Card", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/619ede503da7ff7cc7c9b5883c4558b47296b39c1783332173.webp", isVideo: false },
+      { title: "Satyanarayan Pooja Invitation Card Marathi", category: "festival", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/1e1361f2d79f35eeff74d4fb993af82d141743731754914803.jpg", isVideo: false },
+      { title: "Griha Pravesh Video Invitation Card", category: "festival", src: "https://media.craftyartapp.com/uploadedFiles/v/707af7668162066a9880b3aef75f1ee1635723ed1776771535.mp4", isVideo: true },
+      { title: "Real Estate Property Launch Poster Template", category: "business", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/2f02c460ab5643672f144f8167dc4c3b7e2748c01744031128.png", isVideo: false },
+      { title: "Gym & Fitness Grand Opening Poster", category: "business", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/e892c90c60f224b78971f11a437f82721718018271.jpg", isVideo: false },
+      { title: "Spa & Salon Discount Offer Poster Design", category: "business", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/2c9c7f2ba4bc40cb8f34177d549e31d41718018273.jpg", isVideo: false },
+      { title: "Bakery & Cake Shop Price Menu Card", category: "business", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/d8e12b7a9504c568ef7e0cb60e352ef21718018270.jpg", isVideo: false },
+      { title: "Naming Ceremony Barse Marathi Invitation Video", category: "birthday", src: "https://media.craftyartapp.com/uploadedFiles/v/025bbd83f353d849fbf73b534823d3d178667dc41775737040.mp4", isVideo: true },
+      { title: "Baby Cradle Ceremony Card in Traditional Style", category: "birthday", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/bc936b96c47cb0fa39ab9b7f63876b2a67f2f57e1734001731.jpg", isVideo: false },
+      { title: "Destiny Royal Destination Wedding Video", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/e441d978117f912ad34a07db889efc07996a37191787810577.mp4", isVideo: true },
+      { title: "Muslim Nikah Mubarak Video Invitation", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/c8b0a95a602c4eac078812876cb65e6a2ea5da741783332173.mp4", isVideo: true },
+      { title: "South Indian Muhurtham Video Card", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/d1f20da8510e234b1a61b83434125e9483a53a101782208273.mp4", isVideo: true }
     ];
 
-    let allTemplates = [...builtInTemplates];
     let currentCategory = "all";
     let currentSearch = "";
 
@@ -258,23 +267,15 @@
     const closeModal = document.getElementById("closeModal");
     const itemCount = document.getElementById("itemCount");
 
-    function categorize(title) {
-      const lower = title.toLowerCase();
-      if (lower.includes("wedding") || lower.includes("vivah") || lower.includes("engagement") || lower.includes("save the date") || lower.includes("ring")) return "wedding";
-      if (lower.includes("birthday") || lower.includes("cinderella") || lower.includes("balloon")) return "birthday";
-      if (lower.includes("ganpati") || lower.includes("ganesh") || lower.includes("janmashtami") || lower.includes("dahi handi") || lower.includes("housewarming") || lower.includes("pooja")) return "festival";
-      return "business";
-    }
-
     function renderCards() {
       grid.innerHTML = "";
-      const filtered = allTemplates.filter(t => {
+      const filtered = templates.filter(t => {
         const matchesCategory = currentCategory === "all" || t.category === currentCategory;
         const matchesSearch = t.title.toLowerCase().includes(currentSearch);
         return matchesCategory && matchesSearch;
       });
 
-      itemCount.textContent = `Showing ${filtered.length} of ${allTemplates.length} templates`;
+      itemCount.textContent = `Showing ${filtered.length} of ${templates.length} templates`;
 
       filtered.forEach(t => {
         const card = document.createElement("div");
@@ -304,43 +305,6 @@
       });
     }
 
-    // Auto-fetch remaining dynamic templates directly from the site
-    async function loadLiveTemplates() {
-      try {
-        const response = await fetch("https://api.allorigins.win/raw?url=" + encodeURIComponent("https://siddhidigitalinvite.in/"));
-        const html = await response.text();
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, "text/html");
-
-        const found = [];
-        doc.querySelectorAll("h2").forEach(h => {
-          const card = h.closest("div");
-          const parent = card ? card.parentElement : null;
-          if (!parent) return;
-
-          const title = h.innerText.trim();
-          const video = parent.querySelector("video");
-          const img = parent.querySelector("img");
-          const src = video ? video.src : (img ? img.src : "");
-          const isVideo = !!video;
-
-          if (title && src) {
-            found.push({ title, src, isVideo, category: categorize(title) });
-          }
-        });
-
-        if (found.length > 0) {
-          const map = new Map();
-          [...allTemplates, ...found].forEach(item => map.set(item.title, item));
-          allTemplates = Array.from(map.values());
-        }
-      } catch (err) {
-        console.warn("Live fetch fallback to built-in list", err);
-      }
-      renderCards();
-    }
-
-    // UI Listeners
     tabBtns.forEach(btn => {
       btn.addEventListener("click", () => {
         tabBtns.forEach(b => b.classList.remove("active"));
@@ -365,7 +329,6 @@
     });
 
     renderCards();
-    loadLiveTemplates();
   </script>
 </body>
 </html>
