@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Templates Gallery</title>
+  <title>Templates Catalog</title>
   <style>
     * {
       box-sizing: border-box;
@@ -18,7 +18,6 @@
       padding: 14px 10px;
     }
 
-    /* Search & Filter Header */
     .filter-section {
       max-width: 1200px;
       margin: 0 auto 16px;
@@ -41,7 +40,6 @@
       border-color: #38bdf8;
     }
 
-    /* Category Filter Tabs */
     .tabs {
       display: flex;
       gap: 8px;
@@ -70,7 +68,15 @@
       font-weight: 700;
     }
 
-    /* Grid */
+    .counter {
+      font-size: 0.82rem;
+      color: #94a3b8;
+      margin-bottom: 8px;
+      text-align: right;
+      max-width: 1200px;
+      margin: 0 auto 10px;
+    }
+
     .grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -179,7 +185,7 @@
 <body>
 
   <div class="filter-section">
-    <input type="text" id="searchInput" class="search-input" placeholder="Search templates (e.g. Wedding, Marathi, Poster)..." />
+    <input type="text" id="searchInput" class="search-input" placeholder="Search templates (e.g. Wedding, Birthday, Letterhead)..." />
     <div class="tabs">
       <button class="tab-btn active" data-category="all">All</button>
       <button class="tab-btn" data-category="wedding">Wedding & Engagement</button>
@@ -188,6 +194,8 @@
       <button class="tab-btn" data-category="business">Business & Posters</button>
     </div>
   </div>
+
+  <div class="counter" id="itemCount">Showing templates</div>
 
   <main class="grid" id="grid"></main>
 
@@ -240,6 +248,12 @@
         title: "Marathi Wedding Invitation Video Shubh Vivah Invite",
         category: "wedding",
         src: "https://media.craftyartapp.com/uploadedFiles/v/025bbd83f353d849fbf73b534823d3d178667dc41775737040.mp4",
+        isVideo: true
+      },
+      {
+        title: "3D HouseWarming Invitation Video for Family Celebration",
+        category: "festival",
+        src: "https://media.craftyartapp.com/uploadedFiles/v/fa34348d483cbb4380c2fb5f6c6e8f211a695fa51776771535.mp4",
         isVideo: true
       },
       {
@@ -331,6 +345,18 @@
         category: "festival",
         src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d1718018281.jpg",
         isVideo: false
+      },
+      {
+        title: "Punjabi Wedding Invitation Video with Traditional Themes",
+        category: "wedding",
+        src: "https://media.craftyartapp.com/uploadedFiles/v/266ae86c0fd7bba6cb96fc9850f188275928ef961782206189.webp",
+        isVideo: false
+      },
+      {
+        title: "South Indian Wedding Invitation Video with Elegant Theme",
+        category: "wedding",
+        src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/81ded6e57fccea4e257d9f941ef472385240fddc1787810577.webp",
+        isVideo: false
       }
     ];
 
@@ -341,6 +367,7 @@
     const modalMedia = document.getElementById("modalMedia");
     const modalTitle = document.getElementById("modalTitle");
     const closeModal = document.getElementById("closeModal");
+    const itemCount = document.getElementById("itemCount");
 
     let currentCategory = "all";
     let currentSearch = "";
@@ -352,6 +379,8 @@
         const matchesSearch = t.title.toLowerCase().includes(currentSearch);
         return matchesCategory && matchesSearch;
       });
+
+      itemCount.textContent = `Showing ${filtered.length} of ${templates.length} templates`;
 
       filtered.forEach(t => {
         const card = document.createElement("div");
@@ -381,7 +410,6 @@
       });
     }
 
-    // Tab Filter Logic
     tabBtns.forEach(btn => {
       btn.addEventListener("click", () => {
         tabBtns.forEach(b => b.classList.remove("active"));
@@ -391,13 +419,11 @@
       });
     });
 
-    // Search Filter Logic
     searchInput.addEventListener("input", (e) => {
       currentSearch = e.target.value.toLowerCase();
       renderCards();
     });
 
-    // Modal Close
     function hideModal() {
       modal.classList.remove("active");
       modalMedia.innerHTML = "";
