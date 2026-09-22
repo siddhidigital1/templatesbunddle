@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Templates Gallery</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow-x: hidden;
+      background: #f8fafc;
+    }
+    /* Frame that loads the site */
+    .frame-wrapper {
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="frame-wrapper">
+    <iframe 
+      src="https://siddhidigitalinvite.in/" 
+      title="Template Gallery" 
+      loading="lazy">
+    </iframe>
+  </div>
+
+</body>
+</html>
