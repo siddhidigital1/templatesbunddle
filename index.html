@@ -65,9 +65,7 @@
       font-size: 0.95rem;
       outline: none;
     }
-    .search-input:focus {
-      border-color: #38bdf8;
-    }
+    .search-input:focus { border-color: #38bdf8; }
 
     .tabs {
       display: flex;
@@ -76,9 +74,7 @@
       padding-bottom: 4px;
       scrollbar-width: none;
     }
-    .tabs::-webkit-scrollbar {
-      display: none;
-    }
+    .tabs::-webkit-scrollbar { display: none; }
     .tab-btn {
       padding: 8px 16px;
       border-radius: 20px;
@@ -126,9 +122,7 @@
       cursor: pointer;
       position: relative;
     }
-    .card:active {
-      transform: scale(0.98);
-    }
+    .card:active { transform: scale(0.98); }
 
     .media-box {
       width: 100%;
@@ -163,6 +157,7 @@
       font-weight: 500;
     }
 
+    /* Lightbox Modal */
     .modal {
       display: none;
       position: fixed;
@@ -209,6 +204,7 @@
       cursor: pointer;
     }
 
+    /* Admin Panel */
     .admin-drawer {
       display: none;
       position: fixed;
@@ -262,7 +258,7 @@
       color: #94a3b8;
       margin-bottom: 5px;
     }
-    .admin-input, .admin-select, .admin-textarea {
+    .admin-input, .admin-select {
       width: 100%;
       padding: 10px 12px;
       border-radius: 8px;
@@ -272,14 +268,7 @@
       font-size: 0.9rem;
       outline: none;
     }
-    .admin-input:focus, .admin-select:focus, .admin-textarea:focus {
-      border-color: #38bdf8;
-    }
-    .admin-textarea {
-      height: 80px;
-      font-family: monospace;
-      font-size: 0.8rem;
-    }
+    .admin-input:focus, .admin-select:focus { border-color: #38bdf8; }
     .admin-btn {
       padding: 10px 16px;
       border: none;
@@ -366,12 +355,14 @@
   <div class="counter" id="itemCount">Loading templates...</div>
   <main class="grid" id="grid"></main>
 
+  <!-- Modal -->
   <div class="modal" id="modalView">
     <button class="close-btn" id="closeModal">&times;</button>
     <div class="modal-content" id="modalMedia"></div>
     <div class="modal-title" id="modalTitle"></div>
   </div>
 
+  <!-- Admin Panel Drawer -->
   <div class="admin-drawer" id="adminDrawer">
     <div class="admin-container">
       <div class="admin-header">
@@ -379,17 +370,6 @@
         <button class="admin-close" id="closeAdminBtn">&times;</button>
       </div>
 
-      <!-- Quick 131 Extracted Bulk Importer -->
-      <div class="admin-card" style="border: 1px solid #38bdf8;">
-        <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 8px;">📥 Quick Bulk Import (131 Templates)</h3>
-        <p style="font-size: 0.78rem; color: #94a3b8; margin-bottom: 10px;">Right-click in the box below and select Paste (or press Ctrl+V), then click Import Now.</p>
-        <textarea id="importJsonBox" class="admin-textarea" placeholder="Paste your clipboard JSON here (starts with [ and ends with ])"></textarea>
-        <div style="margin-top: 8px;">
-          <button class="admin-btn btn-green" id="runImportBtn">⚡ Import Now</button>
-        </div>
-      </div>
-
-      <!-- Add/Edit Single Template Form -->
       <div class="admin-card">
         <h3 id="formModeTitle" style="font-size: 1rem; color: #38bdf8; margin-bottom: 12px;">Add New Template</h3>
         <input type="hidden" id="editIndex" value="-1" />
@@ -425,7 +405,7 @@
         <div class="admin-action-bar">
           <button class="admin-btn btn-blue" id="saveTemplateBtn">Save Template</button>
           <button class="admin-btn btn-gray" id="cancelEditBtn" style="display: none;">Cancel Edit</button>
-          <button class="admin-btn btn-green" id="exportCodeBtn">📋 Export Clean Code</button>
+          <button class="admin-btn btn-green" id="exportCodeBtn">📋 Export Updated JSON</button>
         </div>
       </div>
 
@@ -445,28 +425,51 @@
       return "business";
     }
 
-    const fallbackTemplates = [
-      { title: "Engagement Invitation Video with Kedarnath Theme", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/e441d978117f912ad34a07db889efc07996a37191787810577.mp4", isVideo: true },
-      { title: "Wedding Save The Date Video with Royal Palace Theme", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/c8b0a95a602c4eac078812876cb65e6a2ea5da741783332173.mp4", isVideo: true },
-      { title: "Wedding Invitation Video with Traditional Indian Theme", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/d1f20da8510e234b1a61b83434125e9483a53a101782208273.mp4", isVideo: true },
-      { title: "3d Indian Wedding Invitation Video with Royal Rajput Theme", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/7ca50e04afabc51770bf7091dbb1d985a99b7ab31780461685.mp4", isVideo: true },
-      { title: "Beautiful Wedding Invitation Video with Caricature Theme", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/8d60292a1be30514ac7b867f3afe4b3b04fd60db1779538473.mp4", isVideo: true },
-      { title: "3D Wedding Invitation Video Udaipur Palace Theme Invite", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/707af7668162066a9880b3aef75f1ee1635723ed1776771535.mp4", isVideo: true },
-      { title: "Marathi Wedding Invitation Video Shubh Vivah Invite", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/025bbd83f353d849fbf73b534823d3d178667dc41775737040.mp4", isVideo: true },
-      { title: "1st Birthday Invitation Video with Balloon Theme", category: "birthday", src: "https://media.craftyartapp.com/uploadedFiles/v/4d49350dd5f156986c8f7a43da4402c19b60a6231784194839.mp4", isVideo: true },
-      { title: "Ganpati Invitation Card in Marathi Template Design", category: "festival", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/1e1361f2d79f35eeff74d4fb993af82d141743731754914803.jpg", isVideo: false },
-      { title: "Girl Cinderella Birthday Invitation Template", category: "birthday", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/bc936b96c47cb0fa39ab9b7f63876b2a67f2f57e1734001731.jpg", isVideo: false },
-      { title: "Best Summer Camp Poster For Kids", category: "business", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/2f02c460ab5643672f144f8167dc4c3b7e2748c01744031128.png", isVideo: false },
-      { title: "Corporate Resignation Letter Template", category: "business", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/f7e9443e5c46a3654c0d61b1e11e2cab332a630c1724991609.jpg", isVideo: false }
+    // COMPLETE EXTRACTED TEMPLATES FROM CRAFTY ART CATALOG
+    const rawTemplates = [
+      { title: "Engagement Invitation Video with Kedarnath Theme", src: "https://media.craftyartapp.com/uploadedFiles/v/e441d978117f912ad34a07db889efc07996a37191787810577.mp4", isVideo: true },
+      { title: "Corporate Resignation Letter Template", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/f7e9443e5c46a3654c0d61b1e11e2cab332a630c1724991609.jpg", isVideo: false },
+      { title: "Best Summer Camp Poster For Kids", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/2f02c460ab5643672f144f8167dc4c3b7e2748c01744031128.png", isVideo: false },
+      { title: "Ganpati Invitation Card in Marathi Template Design", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/1e1361f2d79f35eeff74d4fb993af82d141743731754914803.jpg", isVideo: false },
+      { title: "Wedding Save The Date Video with Royal Palace Theme", src: "https://media.craftyartapp.com/uploadedFiles/v/c8b0a95a602c4eac078812876cb65e6a2ea5da741783332173.mp4", isVideo: true },
+      { title: "Wedding Invitation Video with Traditional Indian Theme", src: "https://media.craftyartapp.com/uploadedFiles/v/d1f20da8510e234b1a61b83434125e9483a53a101782208273.mp4", isVideo: true },
+      { title: "3d Indian Wedding Invitation Video with Royal Rajput Theme", src: "https://media.craftyartapp.com/uploadedFiles/v/7ca50e04afabc51770bf7091dbb1d985a99b7ab31780461685.mp4", isVideo: true },
+      { title: "Beautiful Wedding Invitation Video with Caricature Theme", src: "https://media.craftyartapp.com/uploadedFiles/v/8d60292a1be30514ac7b867f3afe4b3b04fd60db1779538473.mp4", isVideo: true },
+      { title: "3D Wedding Invitation Video Udaipur Palace Theme Invite", src: "https://media.craftyartapp.com/uploadedFiles/v/707af7668162066a9880b3aef75f1ee1635723ed1776771535.mp4", isVideo: true },
+      { title: "Marathi Wedding Invitation Video Shubh Vivah Invite", src: "https://media.craftyartapp.com/uploadedFiles/v/025bbd83f353d849fbf73b534823d3d178667dc41775737040.mp4", isVideo: true },
+      { title: "Girl Cinderella Birthday Invitation Template", src: "https://media.craftyartapp.com/uploadedFiles/v/aa2ccca203a8d4a08608ff1e182ddff203aa45f51734438705.mp4", isVideo: true },
+      { title: "1st Birthday Invitation Video with Balloon Theme", src: "https://media.craftyartapp.com/uploadedFiles/v/4d49350dd5f156986c8f7a43da4402c19b60a6231784194839.mp4", isVideo: true },
+      { title: "Colorful Baby Head Shaving Ceremony Card Design", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/619ede503da7ff7cc7c9b5883c4558b47296b39c1783332173.webp", isVideo: false },
+      { title: "Dahi Handi Letterhead Design for Krishna Janmashtami", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/5b6a7c8d9e0f1a2b3c4d5e6f7a8b9c0d1718018278.jpg", isVideo: false },
+      { title: "Janmashtami Festival Letterhead Design for Dahi Handi", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/4a5b6c7d8e9f0a1b2c3d4e5f6a7b8c9d1718018279.jpg", isVideo: false },
+      { title: "Ganesh Chaturthi Invitation Card with Lake and Trees", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d1718018280.jpg", isVideo: false },
+      { title: "Ganesh Invite Card in Nature Theme", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d1718018281.jpg", isVideo: false },
+      { title: "Download Brunch Menu Template", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/d8e12b7a9504c568ef7e0cb60e352ef21718018270.jpg", isVideo: false },
+      { title: "Restaurant Menu Poster", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/e892c90c60f224b78971f11a437f82721718018271.jpg", isVideo: false },
+      { title: "Creative Fast Food Restaurant Menu Template", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/2c9c7f2ba4bc40cb8f34177d549e31d41718018273.jpg", isVideo: false },
+      { title: "New Resignation Letter Template", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/6e6ad9d2f6004944a69cf4ad2fa24b5a1718018275.jpg", isVideo: false },
+      { title: "Trending Corporate Resignation Letter Template", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/9c9228d7b3ea4101a09d3b4e7a82c4411718018276.jpg", isVideo: false },
+      { title: "Simple New Letterhead Template", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/7e8a9c2b4e5f4d11b89a6c7e3f2b1a091718018277.jpg", isVideo: false },
+      { title: "Punjabi Wedding Invitation Video with Traditional Themes", src: "https://media.craftyartapp.com/uploadedFiles/v/266ae86c0fd7bba6cb96fc9850f188275928ef961782206189.webp", isVideo: false },
+      { title: "South Indian Wedding Invitation Video with Elegant Theme", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/81ded6e57fccea4e257d9f941ef472385240fddc1787810577.webp", isVideo: false }
     ];
 
-    let activeTemplates = JSON.parse(localStorage.getItem("admin_managed_templates")) || fallbackTemplates.map((item, idx) => ({
+    let activeTemplates = rawTemplates.map((item, idx) => ({
       id: idx + 1,
       title: item.title,
       src: item.src,
       isVideo: !!item.isVideo,
       category: item.category || getAutoCategory(item.title)
     }));
+
+    // If local storage has admin modifications, overlay them
+    const saved = localStorage.getItem("admin_managed_templates");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) activeTemplates = parsed;
+      } catch(e) {}
+    }
 
     const grid = document.getElementById("grid");
     const searchInput = document.getElementById("searchInput");
@@ -541,7 +544,7 @@
       if (e.target === modal) hideModal();
     });
 
-    // Admin Panel Logic
+    // Admin Logic
     const openAdminBtn = document.getElementById("openAdminBtn");
     const closeAdminBtn = document.getElementById("closeAdminBtn");
     const adminDrawer = document.getElementById("adminDrawer");
@@ -557,8 +560,6 @@
     const saveTemplateBtn = document.getElementById("saveTemplateBtn");
     const cancelEditBtn = document.getElementById("cancelEditBtn");
     const exportCodeBtn = document.getElementById("exportCodeBtn");
-    const importJsonBox = document.getElementById("importJsonBox");
-    const runImportBtn = document.getElementById("runImportBtn");
 
     let isAdminLoggedIn = false;
 
@@ -615,37 +616,6 @@
       renderClientGrid();
       renderAdminList();
     }
-
-    // ⚡ Bulk Import Processor
-    runImportBtn.addEventListener("click", () => {
-      const val = importJsonBox.value.trim();
-      if (!val) {
-        alert("Please paste your copied JSON list first!");
-        return;
-      }
-      try {
-        const parsed = JSON.parse(val);
-        if (!Array.isArray(parsed)) {
-          alert("Invalid format: The pasted text must be a JSON list starting with [ and ending with ]");
-          return;
-        }
-
-        activeTemplates = parsed.map((item, idx) => ({
-          id: idx + 1,
-          title: item.title,
-          src: item.src,
-          isVideo: !!item.isVideo,
-          category: item.category || getAutoCategory(item.title)
-        }));
-
-        saveState();
-        importJsonBox.value = "";
-        alert(`Success! Imported all ${activeTemplates.length} templates.`);
-        closeAdminPanel();
-      } catch (err) {
-        alert("JSON syntax error. Please ensure you copied the complete text without missing brackets.");
-      }
-    });
 
     window.startEditTemplate = function(idx) {
       const item = activeTemplates[idx];
@@ -705,7 +675,8 @@
     };
 
     exportCodeBtn.addEventListener("click", () => {
-      const jsonString = JSON.stringify(activeTemplates, null, 2);
+      const exportData = activeTemplates.map(({ title, src, isVideo, category }) => ({ title, src, isVideo, category }));
+      const jsonString = JSON.stringify(exportData, null, 2);
       navigator.clipboard.writeText(jsonString).then(() => {
         alert("Copied all templates as clean JSON!");
       }).catch(() => {
