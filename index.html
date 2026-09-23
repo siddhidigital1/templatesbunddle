@@ -18,7 +18,6 @@
       padding: 14px 10px 40px;
     }
 
-    /* Top Bar */
     .top-bar {
       max-width: 1200px;
       margin: 0 auto 14px;
@@ -49,7 +48,6 @@
       border-color: #38bdf8;
     }
 
-    /* Search & Filter Section */
     .filter-section {
       max-width: 1200px;
       margin: 0 auto 12px;
@@ -71,7 +69,6 @@
       border-color: #38bdf8;
     }
 
-    /* Tabs */
     .tabs {
       display: flex;
       gap: 8px;
@@ -108,7 +105,6 @@
       margin: 0 auto 10px;
     }
 
-    /* Grid */
     .grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -167,7 +163,6 @@
       font-weight: 500;
     }
 
-    /* Lightbox Modal */
     .modal {
       display: none;
       position: fixed;
@@ -214,7 +209,6 @@
       cursor: pointer;
     }
 
-    /* Admin Overlay */
     .admin-drawer {
       display: none;
       position: fixed;
@@ -251,6 +245,7 @@
       border-radius: 50%;
       cursor: pointer;
     }
+
     .admin-card {
       background: #1e293b;
       border: 1px solid #334155;
@@ -267,7 +262,7 @@
       color: #94a3b8;
       margin-bottom: 5px;
     }
-    .admin-input, .admin-select {
+    .admin-input, .admin-select, .admin-textarea {
       width: 100%;
       padding: 10px 12px;
       border-radius: 8px;
@@ -277,8 +272,13 @@
       font-size: 0.9rem;
       outline: none;
     }
-    .admin-input:focus, .admin-select:focus {
+    .admin-input:focus, .admin-select:focus, .admin-textarea:focus {
       border-color: #38bdf8;
+    }
+    .admin-textarea {
+      height: 80px;
+      font-family: monospace;
+      font-size: 0.8rem;
     }
     .admin-btn {
       padding: 10px 16px;
@@ -347,13 +347,11 @@
 </head>
 <body>
 
-  <!-- Top Bar -->
   <header class="top-bar">
     <div class="top-title">Templates Showcase</div>
     <button class="admin-trigger-btn" id="openAdminBtn">⚙️ Admin Login</button>
   </header>
 
-  <!-- Search & Category Tabs -->
   <section class="filter-section">
     <input type="text" id="searchInput" class="search-input" placeholder="Search templates (e.g. Kedarnath, Marathi, Royal)..." />
     <div class="tabs">
@@ -368,14 +366,12 @@
   <div class="counter" id="itemCount">Loading templates...</div>
   <main class="grid" id="grid"></main>
 
-  <!-- Lightbox Modal -->
   <div class="modal" id="modalView">
     <button class="close-btn" id="closeModal">&times;</button>
     <div class="modal-content" id="modalMedia"></div>
     <div class="modal-title" id="modalTitle"></div>
   </div>
 
-  <!-- Admin Panel Drawer -->
   <div class="admin-drawer" id="adminDrawer">
     <div class="admin-container">
       <div class="admin-header">
@@ -383,7 +379,17 @@
         <button class="admin-close" id="closeAdminBtn">&times;</button>
       </div>
 
-      <!-- Add/Edit Form -->
+      <!-- Quick 131 Extracted Bulk Importer -->
+      <div class="admin-card" style="border: 1px solid #38bdf8;">
+        <h3 style="font-size: 1rem; color: #38bdf8; margin-bottom: 8px;">📥 Quick Bulk Import (131 Templates)</h3>
+        <p style="font-size: 0.78rem; color: #94a3b8; margin-bottom: 10px;">Right-click in the box below and select Paste (or press Ctrl+V), then click Import Now.</p>
+        <textarea id="importJsonBox" class="admin-textarea" placeholder="Paste your clipboard JSON here (starts with [ and ends with ])"></textarea>
+        <div style="margin-top: 8px;">
+          <button class="admin-btn btn-green" id="runImportBtn">⚡ Import Now</button>
+        </div>
+      </div>
+
+      <!-- Add/Edit Single Template Form -->
       <div class="admin-card">
         <h3 id="formModeTitle" style="font-size: 1rem; color: #38bdf8; margin-bottom: 12px;">Add New Template</h3>
         <input type="hidden" id="editIndex" value="-1" />
@@ -419,27 +425,17 @@
         <div class="admin-action-bar">
           <button class="admin-btn btn-blue" id="saveTemplateBtn">Save Template</button>
           <button class="admin-btn btn-gray" id="cancelEditBtn" style="display: none;">Cancel Edit</button>
-          <button class="admin-btn btn-green" id="exportCodeBtn">📋 Export Updated JSON</button>
+          <button class="admin-btn btn-green" id="exportCodeBtn">📋 Export Clean Code</button>
         </div>
       </div>
 
-      <!-- List in Admin View -->
       <h3 style="font-size: 1rem; color: #94a3b8; margin-bottom: 12px;">Active Templates (<span id="adminTotalCount">0</span>)</h3>
       <div class="admin-list" id="adminList"></div>
     </div>
   </div>
 
   <script>
-    // 1. Password Config
     const ADMIN_PASSWORD = "admin123";
-
-    // 2. PASTE AREA FOR 131 TEMPLATES
-    // Keep empty array [] if you haven't pasted yet; it will safely load default templates
-    const rawTemplates = 
-/* PASTE_131_JSON_START */
-[]
-/* PASTE_131_JSON_END */
-    ;
 
     function getAutoCategory(title) {
       const t = (title || "").toLowerCase();
@@ -449,7 +445,6 @@
       return "business";
     }
 
-    // Default starter batch if rawTemplates is empty
     const fallbackTemplates = [
       { title: "Engagement Invitation Video with Kedarnath Theme", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/e441d978117f912ad34a07db889efc07996a37191787810577.mp4", isVideo: true },
       { title: "Wedding Save The Date Video with Royal Palace Theme", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/c8b0a95a602c4eac078812876cb65e6a2ea5da741783332173.mp4", isVideo: true },
@@ -465,9 +460,7 @@
       { title: "Corporate Resignation Letter Template", category: "business", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/f7e9443e5c46a3654c0d61b1e11e2cab332a630c1724991609.jpg", isVideo: false }
     ];
 
-    let baseData = (Array.isArray(rawTemplates) && rawTemplates.length > 0) ? rawTemplates : fallbackTemplates;
-
-    let activeTemplates = JSON.parse(localStorage.getItem("admin_managed_templates")) || baseData.map((item, idx) => ({
+    let activeTemplates = JSON.parse(localStorage.getItem("admin_managed_templates")) || fallbackTemplates.map((item, idx) => ({
       id: idx + 1,
       title: item.title,
       src: item.src,
@@ -475,7 +468,6 @@
       category: item.category || getAutoCategory(item.title)
     }));
 
-    // 3. Render Client Grid
     const grid = document.getElementById("grid");
     const searchInput = document.getElementById("searchInput");
     const tabBtns = document.querySelectorAll(".tab-btn");
@@ -549,7 +541,7 @@
       if (e.target === modal) hideModal();
     });
 
-    // 4. Admin Management Logic
+    // Admin Panel Logic
     const openAdminBtn = document.getElementById("openAdminBtn");
     const closeAdminBtn = document.getElementById("closeAdminBtn");
     const adminDrawer = document.getElementById("adminDrawer");
@@ -565,6 +557,8 @@
     const saveTemplateBtn = document.getElementById("saveTemplateBtn");
     const cancelEditBtn = document.getElementById("cancelEditBtn");
     const exportCodeBtn = document.getElementById("exportCodeBtn");
+    const importJsonBox = document.getElementById("importJsonBox");
+    const runImportBtn = document.getElementById("runImportBtn");
 
     let isAdminLoggedIn = false;
 
@@ -595,13 +589,6 @@
     openAdminBtn.addEventListener("click", promptAdminLogin);
     closeAdminBtn.addEventListener("click", closeAdminPanel);
 
-    window.addEventListener("keydown", (e) => {
-      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "a") {
-        e.preventDefault();
-        promptAdminLogin();
-      }
-    });
-
     function renderAdminList() {
       adminList.innerHTML = "";
       adminTotalCount.textContent = activeTemplates.length;
@@ -628,6 +615,37 @@
       renderClientGrid();
       renderAdminList();
     }
+
+    // ⚡ Bulk Import Processor
+    runImportBtn.addEventListener("click", () => {
+      const val = importJsonBox.value.trim();
+      if (!val) {
+        alert("Please paste your copied JSON list first!");
+        return;
+      }
+      try {
+        const parsed = JSON.parse(val);
+        if (!Array.isArray(parsed)) {
+          alert("Invalid format: The pasted text must be a JSON list starting with [ and ending with ]");
+          return;
+        }
+
+        activeTemplates = parsed.map((item, idx) => ({
+          id: idx + 1,
+          title: item.title,
+          src: item.src,
+          isVideo: !!item.isVideo,
+          category: item.category || getAutoCategory(item.title)
+        }));
+
+        saveState();
+        importJsonBox.value = "";
+        alert(`Success! Imported all ${activeTemplates.length} templates.`);
+        closeAdminPanel();
+      } catch (err) {
+        alert("JSON syntax error. Please ensure you copied the complete text without missing brackets.");
+      }
+    });
 
     window.startEditTemplate = function(idx) {
       const item = activeTemplates[idx];
@@ -677,7 +695,7 @@
     });
 
     window.deleteTemplate = function(idx) {
-      if (confirm(`Are you sure you want to delete "${activeTemplates[idx].title}"?`)) {
+      if (confirm(`Delete "${activeTemplates[idx].title}"?`)) {
         activeTemplates.splice(idx, 1);
         saveState();
         if (parseInt(editIndexInput.value, 10) === idx) {
@@ -687,12 +705,11 @@
     };
 
     exportCodeBtn.addEventListener("click", () => {
-      const exportData = activeTemplates.map(({ title, src, isVideo, category }) => ({ title, src, isVideo, category }));
-      const jsonString = JSON.stringify(exportData, null, 2);
+      const jsonString = JSON.stringify(activeTemplates, null, 2);
       navigator.clipboard.writeText(jsonString).then(() => {
-        alert("Copied all current templates as JSON!\n\nYou can paste this into GitHub inside rawTemplates = [ ... ] to keep changes permanent.");
+        alert("Copied all templates as clean JSON!");
       }).catch(() => {
-        prompt("Copy this JSON data manually:", jsonString);
+        prompt("Copy this JSON manually:", jsonString);
       });
     });
 
