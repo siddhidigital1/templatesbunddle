@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Templates Gallery</title>
+  <title>Templates Showcase</title>
   <style>
     * {
       box-sizing: border-box;
@@ -18,7 +18,7 @@
       padding: 14px 10px 40px;
     }
 
-    /* Top Navigation Bar */
+    /* Top Bar */
     .top-bar {
       max-width: 1200px;
       margin: 0 auto 14px;
@@ -71,7 +71,7 @@
       border-color: #38bdf8;
     }
 
-    /* Category Filter Tabs */
+    /* Tabs */
     .tabs {
       display: flex;
       gap: 8px;
@@ -108,7 +108,7 @@
       margin: 0 auto 10px;
     }
 
-    /* Gallery Grid */
+    /* Grid */
     .grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -214,9 +214,7 @@
       cursor: pointer;
     }
 
-    /* ========================================================
-       ADMIN DRAWER / OVERLAY PANEL
-       ======================================================== */
+    /* Admin Overlay */
     .admin-drawer {
       display: none;
       position: fixed;
@@ -253,7 +251,6 @@
       border-radius: 50%;
       cursor: pointer;
     }
-
     .admin-card {
       background: #1e293b;
       border: 1px solid #334155;
@@ -303,7 +300,6 @@
       margin-top: 10px;
     }
 
-    /* Admin List Items */
     .admin-list {
       display: flex;
       flex-direction: column;
@@ -351,13 +347,13 @@
 </head>
 <body>
 
-  <!-- Top Bar with Secret Admin Access -->
+  <!-- Top Bar -->
   <header class="top-bar">
     <div class="top-title">Templates Showcase</div>
     <button class="admin-trigger-btn" id="openAdminBtn">⚙️ Admin Login</button>
   </header>
 
-  <!-- Client Filter & Search View -->
+  <!-- Search & Category Tabs -->
   <section class="filter-section">
     <input type="text" id="searchInput" class="search-input" placeholder="Search templates (e.g. Kedarnath, Marathi, Royal)..." />
     <div class="tabs">
@@ -372,16 +368,14 @@
   <div class="counter" id="itemCount">Loading templates...</div>
   <main class="grid" id="grid"></main>
 
-  <!-- Fullscreen Lightbox Modal -->
+  <!-- Lightbox Modal -->
   <div class="modal" id="modalView">
     <button class="close-btn" id="closeModal">&times;</button>
     <div class="modal-content" id="modalMedia"></div>
     <div class="modal-title" id="modalTitle"></div>
   </div>
 
-  <!-- ========================================================
-       ADMIN DASHBOARD DRAWER (PASSWORD PROTECTED)
-       ======================================================== -->
+  <!-- Admin Panel Drawer -->
   <div class="admin-drawer" id="adminDrawer">
     <div class="admin-container">
       <div class="admin-header">
@@ -389,7 +383,7 @@
         <button class="admin-close" id="closeAdminBtn">&times;</button>
       </div>
 
-      <!-- Add / Edit Template Form -->
+      <!-- Add/Edit Form -->
       <div class="admin-card">
         <h3 id="formModeTitle" style="font-size: 1rem; color: #38bdf8; margin-bottom: 12px;">Add New Template</h3>
         <input type="hidden" id="editIndex" value="-1" />
@@ -425,54 +419,63 @@
         <div class="admin-action-bar">
           <button class="admin-btn btn-blue" id="saveTemplateBtn">Save Template</button>
           <button class="admin-btn btn-gray" id="cancelEditBtn" style="display: none;">Cancel Edit</button>
-          <button class="admin-btn btn-green" id="exportCodeBtn">📋 Export Updated JSON for GitHub</button>
+          <button class="admin-btn btn-green" id="exportCodeBtn">📋 Export Updated JSON</button>
         </div>
       </div>
 
-      <!-- Existing List in Admin View -->
-      <h3 style="font-size: 1rem; color: #94a3b8; margin-bottom: 12px;">Active Templates in Catalog (<span id="adminTotalCount">0</span>)</h3>
+      <!-- List in Admin View -->
+      <h3 style="font-size: 1rem; color: #94a3b8; margin-bottom: 12px;">Active Templates (<span id="adminTotalCount">0</span>)</h3>
       <div class="admin-list" id="adminList"></div>
     </div>
   </div>
 
   <script>
-    // -------------------------------------------------------------
-    // 1. ADMIN AUTHENTICATION CONFIGURATION
-    // -------------------------------------------------------------
-    const ADMIN_PASSWORD = "admin123"; // You can change your password here
+    // 1. Password Config
+    const ADMIN_PASSWORD = "admin123";
 
-    // -------------------------------------------------------------
-    // 2. TEMPLATE DATA SOURCE
-    // (Paste your 131 copied items between rawTemplates = and ;)
-    // -------------------------------------------------------------
+    // 2. PASTE AREA FOR 131 TEMPLATES
+    // Keep empty array [] if you haven't pasted yet; it will safely load default templates
     const rawTemplates = 
-
+/* PASTE_131_JSON_START */
+[]
+/* PASTE_131_JSON_END */
     ;
 
     function getAutoCategory(title) {
-      const t = title.toLowerCase();
+      const t = (title || "").toLowerCase();
       if (t.includes("wedding") || t.includes("vivah") || t.includes("engagement") || t.includes("save the date") || t.includes("ring") || t.includes("haldi") || t.includes("sangeet") || t.includes("reception") || t.includes("kankotri")) return "wedding";
       if (t.includes("birthday") || t.includes("cinderella") || t.includes("balloon") || t.includes("baby") || t.includes("naming") || t.includes("barse") || t.includes("cradle") || t.includes("shaving")) return "birthday";
       if (t.includes("ganpati") || t.includes("ganesh") || t.includes("pooja") || t.includes("janmashtami") || t.includes("dahi handi") || t.includes("housewarming") || t.includes("vastu") || t.includes("diwali") || t.includes("navratri") || t.includes("festival")) return "festival";
       return "business";
     }
 
-    // Load from browser storage if modifications were made in Admin; fallback to code array
-    let defaultTemplates = (typeof rawTemplates !== "undefined" && Array.isArray(rawTemplates))
-      ? rawTemplates.map((item, idx) => ({
-          id: idx + 1,
-          title: item.title,
-          src: item.src,
-          isVideo: !!item.isVideo,
-          category: item.category || getAutoCategory(item.title)
-        }))
-      : [];
+    // Default starter batch if rawTemplates is empty
+    const fallbackTemplates = [
+      { title: "Engagement Invitation Video with Kedarnath Theme", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/e441d978117f912ad34a07db889efc07996a37191787810577.mp4", isVideo: true },
+      { title: "Wedding Save The Date Video with Royal Palace Theme", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/c8b0a95a602c4eac078812876cb65e6a2ea5da741783332173.mp4", isVideo: true },
+      { title: "Wedding Invitation Video with Traditional Indian Theme", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/d1f20da8510e234b1a61b83434125e9483a53a101782208273.mp4", isVideo: true },
+      { title: "3d Indian Wedding Invitation Video with Royal Rajput Theme", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/7ca50e04afabc51770bf7091dbb1d985a99b7ab31780461685.mp4", isVideo: true },
+      { title: "Beautiful Wedding Invitation Video with Caricature Theme", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/8d60292a1be30514ac7b867f3afe4b3b04fd60db1779538473.mp4", isVideo: true },
+      { title: "3D Wedding Invitation Video Udaipur Palace Theme Invite", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/707af7668162066a9880b3aef75f1ee1635723ed1776771535.mp4", isVideo: true },
+      { title: "Marathi Wedding Invitation Video Shubh Vivah Invite", category: "wedding", src: "https://media.craftyartapp.com/uploadedFiles/v/025bbd83f353d849fbf73b534823d3d178667dc41775737040.mp4", isVideo: true },
+      { title: "1st Birthday Invitation Video with Balloon Theme", category: "birthday", src: "https://media.craftyartapp.com/uploadedFiles/v/4d49350dd5f156986c8f7a43da4402c19b60a6231784194839.mp4", isVideo: true },
+      { title: "Ganpati Invitation Card in Marathi Template Design", category: "festival", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/1e1361f2d79f35eeff74d4fb993af82d141743731754914803.jpg", isVideo: false },
+      { title: "Girl Cinderella Birthday Invitation Template", category: "birthday", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/bc936b96c47cb0fa39ab9b7f63876b2a67f2f57e1734001731.jpg", isVideo: false },
+      { title: "Best Summer Camp Poster For Kids", category: "business", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/2f02c460ab5643672f144f8167dc4c3b7e2748c01744031128.png", isVideo: false },
+      { title: "Corporate Resignation Letter Template", category: "business", src: "https://media.craftyartapp.com/uploadedFiles/thumb_file/f7e9443e5c46a3654c0d61b1e11e2cab332a630c1724991609.jpg", isVideo: false }
+    ];
 
-    let activeTemplates = JSON.parse(localStorage.getItem("admin_managed_templates")) || defaultTemplates;
+    let baseData = (Array.isArray(rawTemplates) && rawTemplates.length > 0) ? rawTemplates : fallbackTemplates;
 
-    // -------------------------------------------------------------
-    // 3. CLIENT VIEW RENDERING
-    // -------------------------------------------------------------
+    let activeTemplates = JSON.parse(localStorage.getItem("admin_managed_templates")) || baseData.map((item, idx) => ({
+      id: idx + 1,
+      title: item.title,
+      src: item.src,
+      isVideo: !!item.isVideo,
+      category: item.category || getAutoCategory(item.title)
+    }));
+
+    // 3. Render Client Grid
     const grid = document.getElementById("grid");
     const searchInput = document.getElementById("searchInput");
     const tabBtns = document.querySelectorAll(".tab-btn");
@@ -546,9 +549,7 @@
       if (e.target === modal) hideModal();
     });
 
-    // -------------------------------------------------------------
-    // 4. ADMIN DRAWER & EDITING LOGIC
-    // -------------------------------------------------------------
+    // 4. Admin Management Logic
     const openAdminBtn = document.getElementById("openAdminBtn");
     const closeAdminBtn = document.getElementById("closeAdminBtn");
     const adminDrawer = document.getElementById("adminDrawer");
@@ -594,7 +595,6 @@
     openAdminBtn.addEventListener("click", promptAdminLogin);
     closeAdminBtn.addEventListener("click", closeAdminPanel);
 
-    // Keyboard shortcut to open admin: Ctrl + Shift + A
     window.addEventListener("keydown", (e) => {
       if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === "a") {
         e.preventDefault();
@@ -667,10 +667,8 @@
       }
 
       if (editIdx >= 0) {
-        // Update existing template
         activeTemplates[editIdx] = { ...activeTemplates[editIdx], title, category, src, isVideo };
       } else {
-        // Add new template to beginning
         activeTemplates.unshift({ id: Date.now(), title, category, src, isVideo });
       }
 
@@ -688,18 +686,16 @@
       }
     };
 
-    // One-click Export to permanently update the file on GitHub
     exportCodeBtn.addEventListener("click", () => {
       const exportData = activeTemplates.map(({ title, src, isVideo, category }) => ({ title, src, isVideo, category }));
       const jsonString = JSON.stringify(exportData, null, 2);
       navigator.clipboard.writeText(jsonString).then(() => {
-        alert("Copied all current templates as JSON to your clipboard!\n\nYou can paste this directly into GitHub under 'const rawTemplates = ' to make your edits permanent for all users.");
+        alert("Copied all current templates as JSON!\n\nYou can paste this into GitHub inside rawTemplates = [ ... ] to keep changes permanent.");
       }).catch(() => {
         prompt("Copy this JSON data manually:", jsonString);
       });
     });
 
-    // Initial load
     renderClientGrid();
   </script>
 </body>
